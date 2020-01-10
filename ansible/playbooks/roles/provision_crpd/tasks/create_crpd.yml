@@ -1,0 +1,57 @@
+---
+
+- name: Create Docker Config Volumes
+  shell: "docker volume create {{ item.value.config }}"
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: Create Docker Var Volumes
+  shell: "docker volume create {{ item.value.varlog }}"
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: Create cRPD container
+  shell: "docker create -it --hostname {{ item.value.name }} --name {{ item.value.name }} --privileged  -v {{ item.value.config }}:/config -v {{ item.value.varlog }}:/var/log crpd:latest"
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: start cRPD containers
+  shell: "docker start {{ item.value.name }}"
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: create netns directory
+  shell: "mkdir -p /var/run/netns/"
+
+- name: create namespace for the Docker
+  shell: pid=$(docker inspect -f '{{params}}' {{ item.value.name }});ln -sfT /proc/$pid/ns/net /var/run/netns/{{ item.value.name }}
+  with_dict: "{{ iter.value.spin_crpd }}"
+  vars:
+      params: !unsafe '{{.State.Pid}}'
+
+
+
+
+- name: Configure physical interface
+  include_tasks: docker_phy_network.yml
+  with_subelements:
+   - "{{ iter.value.spin_crpd }}"
+   - network.physical
+   - skip_missing: True
+
+
+- name: Configure virtual interface
+  include_tasks: docker_vir_network.yml
+  with_subelements:
+   - "{{ iter.value.spin_crpd }}"
+   - network.virtual
+   - skip_missing: True
+
+- name: Start ssh service
+  shell: docker exec -d {{ item.value.name }} service ssh start
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: create ssh directory
+  shell: docker exec -d {{ item.value.name }} mkdir -p /root/.ssh
+  with_dict: "{{ iter.value.spin_crpd }}"
+
+- name: copy ssh authorized key
+  shell: docker cp /root/.ssh/id_rsa.pub {{ item.value.name }}:/root/.ssh/authorized_keys
+  with_dict: "{{ iter.value.spin_crpd }}"
+

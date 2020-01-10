@@ -1,0 +1,12 @@
+
+
+- name: copy docker image files
+  copy:
+   src: "{{ playbook_dir }}/roles/install_docker_image/files/docker_image.tgz"
+   dest: "/root/docker_image.tgz"
+
+- name: install make
+  shell: "sudo apt-get install --reinstall make"
+
+- name: Build docker image
+  shell: "cd /root; rm -rf docker; mkdir -p /root/docker; cp /root/docker_image.tgz /root/docker/docker_image.tgz; cd /root/docker; tar -xvf docker_image.tgz; cd image; make docker-images"

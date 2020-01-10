@@ -1,0 +1,37 @@
+- name: Update kernel
+  shell: "sudo apt-get -y update"
+- name: Apt-get Update
+  shell: "sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common"
+- name: Install KVM
+  shell: "sudo apt-get -y update; sudo apt-get -y install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils virt-manager"
+- name: Install docker - step 1
+  shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+- name: Install docker - step 2
+  shell: 'sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"'
+- name: Install docker - step 3
+  shell: "sudo apt-get -y update"
+- name: Install docker - step 4
+  shell: "apt-cache policy docker-ce"
+- name: Install docker - step 5
+  shell: "sudo apt install -y docker-ce"
+- name: Install docker - step 6
+  shell: "sudo systemctl status docker; sudo usermod -aG docker ${USER}; id -nG; apt-get install -y make"
+- name: Install openvswitch
+  shell: "sudo apt-get install -y openvswitch-switch; cd /usr/bin; wget https://raw.githubusercontent.com/openvswitch/ovs/master/utilities/ovs-docker; chmod a+rwx ovs-docker"
+#- name: Install netns
+#  shell: "sudo apt-get install -y netns"
+- name: Install pip
+  shell: "sudo apt-get install -y python-pip"
+- name: install pexpect
+  pip:
+    name: pexpect
+  become: yes
+- name: Create ssh keys
+  expect:
+    command: ssh-keygen -t rsa
+    echo: yes
+    timeout: 5
+    responses:
+      "file": "" ## Enter file in which to save the key (/home/admin/.ssh/id_rsa)
+      "Overwrite": "y" ## Overwrite (y/n)?
+      "passphrase": "" ## Enter passphrase (empty for no passphrase)

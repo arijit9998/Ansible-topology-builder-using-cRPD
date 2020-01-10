@@ -1,0 +1,14 @@
+---
+
+- name: attach the ovs bridge
+  shell: sudo ovs-vsctl add-br {{ item.value.bridge }}
+  with_dict:  "{{ item.1 }}"
+  ignore_errors: yes
+
+- name: Bring up virtual interface inside docker
+  shell: sudo ovs-docker add-port {{ item.value.bridge }} {{ item.value.name }} {{ item.value.docker_name }} --mtu={{ item.value.mtu }}
+  with_dict: "{{ item.1 }}"
+
+- name: Add IP to virtual interface inside docker
+  shell: sudo docker exec -d {{ item.value.docker_name }} ifconfig {{ item.value.name }} {{ item.value.ip }} mtu {{ item.value.mtu }} up
+  with_dict: "{{ item.1 }}"

@@ -1,0 +1,9 @@
+---
+- name: Provisioning cRPD 
+  include_tasks: create_crpd.yml
+  when: iter.key == ansible_hostname
+  with_dict: "{{ vm_info.hypervisors }}"
+  loop_control:
+    loop_var: iter
+
+

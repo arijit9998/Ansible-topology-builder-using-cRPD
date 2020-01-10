@@ -1,0 +1,10 @@
+---
+
+- name: attach the physical interface to docker namespace
+  shell: ip link set {{ item.value.name }} netns {{ item.value.docker_name }}
+  with_dict:  "{{ item.1 }}"
+  ignore_errors: yes
+
+- name: Bring up physical interface inside docker
+  shell: sudo docker exec -d {{ item.value.docker_name }} ifconfig {{ item.value.name }} {{ item.value.ip }} mtu {{ item.value.mtu }} up
+  with_dict: "{{ item.1 }}"

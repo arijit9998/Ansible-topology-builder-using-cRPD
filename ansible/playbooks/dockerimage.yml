@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  tasks:
+    - add_host:
+        name: "{{ item.value.ip }}"
+        ansible_ssh_host: "{{ item.value.ip }}"
+        ansible_ssh_user: "{{ item.value.ansible_user | default('root') }}"
+        ansible_ssh_pass: "{{ item.value.ansible_ssh_pass | default('Embe1mpls') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        group: "hypervisor_hosts"
+      with_dict: "{{ vm_info.hypervisors }}"
+
+#- hosts: localhost
+#  roles:
+#    - generate_dhcp_files
+
+- hosts: hypervisor_hosts
+  roles:
+    - install_docker_image
+
+#- hosts: server_manager
+#  roles:
+#    - check_reimage

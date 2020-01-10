@@ -1,0 +1,134 @@
+instances:
+  bms1:
+    provider: bms
+    ip:
+
+  bms2:
+    provider: bms
+    ip:
+
+  bms3:
+    provider: bms
+    ip:
+
+  bms4:
+    provider: bms
+    ip:
+
+  bms5:
+    provider: bms
+    ip:
+
+
+test_configuration:
+    image_web_server: 10.84.5.120
+    use_project_scoped_token: True
+    public_host: 10.84.5.120
+    web_server:
+        server:
+        username:
+        password:
+        report_path:
+        log_path:
+        web_root:
+    mail_server:
+        server:
+        port:
+        to:
+        sender:
+
+server_manager:
+  ip: 10.87.66.235
+  username: root
+  password: c0ntrail123
+  image: ubuntu-16.04
+  #client: /cs-shared/server-manager/client/server-manager
+
+
+vm_info:
+  default:
+    image_dest: /mnt/disk1/images/
+    disk_format: qcow2
+    image_source: http://10.84.5.120/images/node_vm_images/centos-7.4-copy.qcow2.gz
+    total_vm_count: 50
+    hypervisor_count: 3
+  hypervisors:
+    kolkata:
+      ip: 10.92.196.36 
+      spin_crpd:
+        crpd1:
+          name: crpd1
+          config: crpd1-config
+          varlog: crpd1-varlog
+          memory:
+          cpu:
+          network:
+            physical:
+              - intf1:
+                  name: enp5s0f0
+                  ip: 2.2.2.1/30
+                  mtu: 9000
+                  docker_name: crpd1
+              - intf2:
+                  name: enp5s0f1
+                  ip: 5.5.5.1/30
+                  mtu: 9000
+                  docker_name: crpd1
+
+            virtual:
+              - intf1:
+                  name: eth1
+                  ip: 6.6.6.1/30
+                  mtu: 9000
+                  bridge: br2
+                  docker_name: crpd1
+
+              - intf2:
+                  name: eth2
+                  ip: 7.7.7.1/30
+                  mtu: 9000
+                  bridge: br3
+                  docker_name: crpd1
+
+        crpd2:
+          name: crpd2
+          config: crpd2-config
+          varlog: crpd2-varlog
+          memory:
+          cpu:
+          network:
+            virtual:
+              - intf1:
+                  name: eth1
+                  ip: 6.6.6.2/30
+                  mtu: 9000
+                  bridge: br2
+                  docker_name: crpd2
+              - intf2:
+                  name: eth2
+                  ip: 7.7.7.2/30
+                  mtu: 9000
+                  bridge: br3
+                  docker_name: crpd2
+
+        # crpd3:
+        #   name: crpd3
+        #   config: crpd3-config
+        #   varlog: crpd3-varlog
+        #   memory:
+        #   cpu:
+        #   network:
+        #     physical:
+        #       - intf1:
+        #           name: p1p3
+        #           ip: 5.5.5.2/30
+        #           mtu: 9000
+        #           docker_name: crpd3
+        #     virtual:
+        #       - intf1:
+        #           name: eth1
+        #           ip: 7.7.7.2/30
+        #           mtu: 9000
+        #           bridge: crpd1_crpd3
+        #           docker_name: crpd3
+
